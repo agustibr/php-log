@@ -3,9 +3,14 @@
 //ip!
 $ip=$_SERVER['REMOTE_ADDR'];
 $client="[client ".$ip."]";
-if (isset($_POST['CLEAR']))	exec("cat /dev/null > ./error.log");
-$log_path = './error.log';
-exec("cat $log_path",$eror_log);
+$log_path = '/var/log/apache2/error.log';
+$ssl_log_path = '/var/log/apache2/ssl_error.log';
+if ( isset($_POST['ssl']) ){
+	if ($_POST['ssl'] == 'ssl_on') $log_path = $ssl_log_path; 
+} 
+$ssl = (isset($_POST['ssl']) && $_POST['ssl']== 'ssl_on') ? '<input type="hidden" value="ssl_on" name="ssl" />' : '<input type="hidden" value="ssl_off" name="ssl" />' ;
+if (isset($_POST['CLEAR']))	exec("cat /dev/null > $log_path");
+exec("cat $log_path",$error_log);
 
 function pre($arr){
 	echo '<pre>';
@@ -13,6 +18,7 @@ function pre($arr){
 	echo '</pre>';
 }
 
+//pre($_POST);
 ?>
 
 <!DOCTYPE html>
@@ -33,12 +39,23 @@ function pre($arr){
 		<div class="container-fluid">
 			<span class="pull-left brand">PHP Log</span>  
 			<form class="pull-left navbar-search pull-left" action="./index.php" method="POST" target="_self">
+				<?php echo $ssl; ?>
 				<button class="btn btn-inverse"><i class="icon-refresh icon-white"></i> actualitza</button>
 			</form>
-			<form class="pull-left navbar-search pull-left" action="./index.php" method="POST" target="_self">
+			<form class="pull-left navbar-search" action="./index.php" method="POST" target="_self">
 				<input type="hidden" value="Ok" name="CLEAR" />
-				<?php $disabled = (count($eror_log)>=1) ? '' : ' disabled' ; ?>
+				<?php echo $ssl; ?>
+				<?php $disabled = (count($error_log)>=1) ? '' : ' disabled' ; ?>
 				<button class="btn btn-inverse" <?php echo $disabled;?>><i class="icon-trash icon-white"></i> esborra</button>
+			</form>
+			<form class="pull-right navbar-search form-inline" action="./index.php" method="POST" target="_self">
+				<input type="hidden" value="ssl_off" name="ssl" />
+				<?php 
+				$disabled = ($ssl_log_path!='') ? '' : ' disabled="disabled"' ;
+				$checked = ( isset($_POST['ssl']) && $_POST['ssl']== 'ssl_on') ? 'checked="checked"' : '' ;
+				?>
+				<input type="checkbox" <?php echo $disabled .' ' . $checked;?> value="ssl_on" name="ssl" id="optionsCheckbox"/>
+				<button class="btn btn-inverse" <?php echo $disabled;?>><i class="icon-lock icon-white"></i> ssl</button>
 			</form>
 		</div>
 	</div>
@@ -48,13 +65,13 @@ function pre($arr){
 		<div class="row-fluid">
 			<p>client: <code><?php echo $ip;?></code>, log: <code><?php echo $log_path;?></code></p>
 		<?php
-		if (count($eror_log)>=1) {
+		if (count($error_log)>=1) {
 			echo '<table class="table table-striped table-bordered table-condensed">';
-			for ($i=0;$i<count($eror_log);$i++) {
-				if (strpos($eror_log[$i],$client)!==false) {
+			for ($i=0;$i<count($error_log);$i++) {
+				if (strpos($error_log[$i],$client)!==false) {
 					$stri = '<tr>';
-					$eror_log[$i]=str_replace($client,"",$eror_log[$i]);
-					$client_eror_log=explode("]",$eror_log[$i]);
+					$error_log[$i]=str_replace($client,"",$error_log[$i]);
+					$client_eror_log=explode("]",$error_log[$i]);
 					$hora=explode(" ",$client_eror_log[0]);
 					$new_h= $hora[2]." ".$hora[1]." ".$hora[3]." ".$hora[4];			
 					$findme='[error';
@@ -70,12 +87,12 @@ function pre($arr){
 
 					} else {
 						$findme = 'PHP Notice:';
-						if (strpos($eror_log[$i],$findme)!==false){
+						if (strpos($error_log[$i],$findme)!==false){
 							$stri = str_replace( $findme, '<span class="label label-warning">'.$findme.'</span>', $stri).'';
 						}
 
 						$findme = 'PHP Warning:';
-						if (strpos($eror_log[$i],$findme)!==false){
+						if (strpos($error_log[$i],$findme)!==false){
 							$stri = str_replace( $findme, '<span class="label label-important">'.$findme.'</span> ', $stri).'';
 						}
 					}
