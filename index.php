@@ -38,15 +38,15 @@ function pre($arr){
 	<div class="navbar-inner">
 		<div class="container-fluid">
 			<span class="pull-left brand">PHP Log</span>  
-			<form class="pull-left navbar-search pull-left" action="./index.php" method="POST" target="_self">
+			<form class="pull-left navbar-search" action="" method="POST" target="_self">
 				<?php echo $ssl; ?>
-				<button class="btn btn-inverse"><i class="icon-refresh icon-white"></i> actualitza</button>
+				<button class="btn"><i class="icon-refresh"></i> actualitza</button>
 			</form>
-			<form class="pull-left navbar-search" action="./index.php" method="POST" target="_self">
+			<form class="pull-left navbar-search" action="" method="POST" target="_self">
 				<input type="hidden" value="Ok" name="CLEAR" />
 				<?php echo $ssl; ?>
 				<?php $disabled = (count($error_log)>=1) ? '' : ' disabled' ; ?>
-				<button class="btn btn-inverse" <?php echo $disabled;?>><i class="icon-trash icon-white"></i> esborra</button>
+				<button class="btn" <?php echo $disabled;?>><i class="icon-trash"></i> esborra</button>
 			</form>
 			<form class="pull-right navbar-search form-inline" action="./index.php" method="POST" target="_self">
 				<input type="hidden" value="ssl_off" name="ssl" />
@@ -63,47 +63,58 @@ function pre($arr){
 <div class="container-fluid">
 	<section>
 		<div class="row-fluid">
-			<p>client: <code><?php echo $ip;?></code>, log: <code><?php echo $log_path;?></code></p>
-		<?php
-		if (count($error_log)>=1) {
-			echo '<table class="table table-striped table-bordered table-condensed">';
-			for ($i=0;$i<count($error_log);$i++) {
-				if (strpos($error_log[$i],$client)!==false) {
-					$stri = '<tr>';
-					$error_log[$i]=str_replace($client,"",$error_log[$i]);
-					$client_eror_log=explode("]",$error_log[$i]);
-					$hora=explode(" ",$client_eror_log[0]);
-					$new_h= $hora[2]." ".$hora[1]." ".$hora[3]." ".$hora[4];			
-					$findme='[error';
-					if(strpos($client_eror_log[1], $findme)!=''){
-						$error_type = '<span class="badge">error</span>';
-					} else {
-						$error_type = $client_eror_log[1];
-					}
+			<div class="span12">
+				
+				<form class="pull-left" action="" method="POST" target="_self">
+					<?php echo $ssl; ?>
+					<button class="btn btn-mini"><i class="icon-refresh"></i> actualitza</button>&nbsp;
+				</form>
+				<p class="pull-left">client: <code><?php echo $ip;?></code>, log: <code><?php echo $log_path;?></code></p>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<?php
+				if (count($error_log)>=1) {
+					echo '<table class="table table-striped table-bordered table-condensed">';
+					for ($i=0;$i<count($error_log);$i++) {
+						if (strpos($error_log[$i],$client)!==false) {
+							$stri = '<tr>';
+							$error_log[$i]=str_replace($client,"",$error_log[$i]);
+							$client_eror_log=explode("]",$error_log[$i]);
+							$hora=explode(" ",$client_eror_log[0]);
+							$new_h= $hora[2]." ".$hora[1]." ".$hora[3]." ".$hora[4];			
+							$findme='[error';
+							if(strpos($client_eror_log[1], $findme)!=''){
+								$error_type = '<span class="badge">error</span>';
+							} else {
+								$error_type = $client_eror_log[1];
+							}
 
-					$stri .='<td>'.$new_h.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
+							$stri .='<td>'.$new_h.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
 
-					if(strpos($client_eror_log[2], $findme)!=''){
+							if(strpos($client_eror_log[2], $findme)!=''){
 
-					} else {
-						$findme = 'PHP Notice:';
-						if (strpos($error_log[$i],$findme)!==false){
-							$stri = str_replace( $findme, '<span class="label label-warning">'.$findme.'</span>', $stri).'';
+							} else {
+								$findme = 'PHP Notice:';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '<span class="label label-warning">'.$findme.'</span>', $stri).'';
+								}
+
+								$findme = 'PHP Warning:';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '<span class="label label-important">'.$findme.'</span> ', $stri).'';
+								}
+							}
+							echo $stri.'</span></td></tr>';
 						}
-
-						$findme = 'PHP Warning:';
-						if (strpos($error_log[$i],$findme)!==false){
-							$stri = str_replace( $findme, '<span class="label label-important">'.$findme.'</span> ', $stri).'';
-						}
 					}
-					echo $stri.'</span></td></tr>';
+					echo "</table>";
+				} else {
+					echo '<div class="alert alert-success"><strong>Ben Fet!</strong> No hi ha errors :)</div>';
 				}
-			}
-			echo "</table>";
-		} else {
-			echo '<div class="alert alert-success"><strong>Ben Fet!</strong> No hi ha errors :)</div>';
-		}
-		?>
+				?>	
+			</div>
 		</div>
 	</section>
 </div>
