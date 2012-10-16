@@ -18,6 +18,19 @@ function pre($arr){
 	echo '</pre>';
 }
 
+function time_ago($time) {
+	$periods = array("sec", "min", "hour", "day", "week", "month", "year", "decade");
+	$lengths = array("60","60","24","7","4.35","12","10");
+	$now = time();
+	$difference = $now - $time;
+	$tense = "ago";
+	for($j = 0; $difference >= $lengths[$j] && $j < count($lengths)-1; $j++) {
+		$difference /= $lengths[$j];
+	}
+	$difference = round($difference);
+	if($difference != 1) $periods[$j].= "s";
+	return "$difference $periods[$j] ago";
+}
 //pre($_POST);
 ?>
 
@@ -69,6 +82,12 @@ function pre($arr){
 					<?php echo $ssl; ?>
 					<button class="btn btn-mini"><i class="icon-refresh"></i> actualitza</button>&nbsp;
 				</form>
+				<form class="pull-left" action="" method="POST" target="_self">
+					<input type="hidden" value="Ok" name="CLEAR" />
+					<?php echo $ssl; ?>
+					<?php $disabled = (count($error_log)>=1) ? '' : ' disabled' ; ?>
+					<button class="btn btn-mini" <?php echo $disabled;?>><i class="icon-trash"></i></button>&nbsp;
+				</form>
 				<p class="pull-left">client: <code><?php echo $ip;?></code>, log: <code><?php echo $log_path;?></code></p>
 			</div>
 		</div>
@@ -83,7 +102,13 @@ function pre($arr){
 							$error_log[$i]=str_replace($client,"",$error_log[$i]);
 							$client_eror_log=explode("]",$error_log[$i]);
 							$hora=explode(" ",$client_eror_log[0]);
-							$new_h= $hora[2]." ".$hora[1]." ".$hora[3]." ".$hora[4];			
+							//$date="30/07/2010 13:24:13"; //date example
+							$mes = ($hora[1]=='Oct') ? '10' : $hora[1] ;
+							$date = $hora[2]."/".$mes."/".$hora[4]." ".$hora[3];
+							list($day, $month, $year, $hour, $minute, $second) = split('[/ :]', $date); 
+							$timestamp=mktime($hour, $minute,$second , $month, $day, $year);
+							$time_ago = time_ago($timestamp);
+
 							$findme='[error';
 							if(strpos($client_eror_log[1], $findme)!=''){
 								$error_type = '<span class="badge">error</span>';
@@ -91,7 +116,7 @@ function pre($arr){
 								$error_type = $client_eror_log[1];
 							}
 
-							$stri .='<td>'.$new_h.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
+							$stri .='<td>'.$time_ago.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
 
 							if(strpos($client_eror_log[2], $findme)!=''){
 
