@@ -130,6 +130,29 @@ function time_ago($time) {
 								if (strpos($error_log[$i],$findme)!==false){
 									$stri = str_replace( $findme, '<span class="label label-important">'.$findme.'</span> ', $stri).'';
 								}
+
+								$findme = 'File does not exist:';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '<span class="label label-info">'.$findme.'</span> ', $stri).'';
+								}
+
+								$findme = 'Undefined variable:';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '<strong>'.$findme.'</strong> ', $stri).'';
+								}
+								$findme = 'referer:';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '<br/><span class="label">'.$findme.'</span> ', $stri).'';
+								}
+								$findme = ' in ';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, ''.$findme.'<code> ', $stri).'';
+								}
+								$findme = ' on line ';
+								if (strpos($error_log[$i],$findme)!==false){
+									$stri = str_replace( $findme, '</code>'.$findme.'', $stri).'';
+								}
+								
 							}
 							echo $stri.'</span></td></tr>';
 						}
