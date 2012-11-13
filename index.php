@@ -103,7 +103,18 @@ function time_ago($time) {
 							$client_eror_log=explode("]",$error_log[$i]);
 							$hora=explode(" ",$client_eror_log[0]);
 							//$date="30/07/2010 13:24:13"; //date example
+							$mes = ($hora[1]=='Jan') ? '01' : $hora[1] ;
+							$mes = ($hora[1]=='Feb') ? '02' : $hora[1] ;
+							$mes = ($hora[1]=='Mar') ? '03' : $hora[1] ;
+							$mes = ($hora[1]=='Apr') ? '04' : $hora[1] ;
+							$mes = ($hora[1]=='May') ? '05' : $hora[1] ;
+							$mes = ($hora[1]=='Jun') ? '06' : $hora[1] ;
+							$mes = ($hora[1]=='Jul') ? '07' : $hora[1] ;
+							$mes = ($hora[1]=='Aug') ? '08' : $hora[1] ;
+							$mes = ($hora[1]=='Sep') ? '09' : $hora[1] ;
 							$mes = ($hora[1]=='Oct') ? '10' : $hora[1] ;
+							$mes = ($hora[1]=='Nov') ? '11' : $hora[1] ;
+							$mes = ($hora[1]=='Dec') ? '12' : $hora[1] ;
 							$date = $hora[2]."/".$mes."/".$hora[4]." ".$hora[3];
 							list($day, $month, $year, $hour, $minute, $second) = split('[/ :]', $date); 
 							$timestamp=mktime($hour, $minute,$second , $month, $day, $year);
