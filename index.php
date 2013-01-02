@@ -1,10 +1,10 @@
 <?php
-
+require('config.php');
 //ip!
 $ip=$_SERVER['REMOTE_ADDR'];
 $client="[client ".$ip."]";
-$log_path = '/var/log/apache2/error.log';
-$ssl_log_path = '/var/log/apache2/ssl_error.log';
+$log_path = $setup['log_path'];
+$ssl_log_path = $setup['ssl_log_path'];
 if ( isset($_POST['ssl']) ){
 	if ($_POST['ssl'] == 'ssl_on') $log_path = $ssl_log_path; 
 } 
