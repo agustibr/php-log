@@ -103,21 +103,21 @@ function time_ago($time) {
 							$client_eror_log=explode("]",$error_log[$i]);
 							$hora=explode(" ",$client_eror_log[0]);
 							//$date="30/07/2010 13:24:13"; //date example
-							$mes = ($hora[1]=='Jan') ? '01' : $hora[1] ;
-							$mes = ($hora[1]=='Feb') ? '02' : $hora[1] ;
-							$mes = ($hora[1]=='Mar') ? '03' : $hora[1] ;
-							$mes = ($hora[1]=='Apr') ? '04' : $hora[1] ;
-							$mes = ($hora[1]=='May') ? '05' : $hora[1] ;
-							$mes = ($hora[1]=='Jun') ? '06' : $hora[1] ;
-							$mes = ($hora[1]=='Jul') ? '07' : $hora[1] ;
-							$mes = ($hora[1]=='Aug') ? '08' : $hora[1] ;
-							$mes = ($hora[1]=='Sep') ? '09' : $hora[1] ;
-							$mes = ($hora[1]=='Oct') ? '10' : $hora[1] ;
-							$mes = ($hora[1]=='Nov') ? '11' : $hora[1] ;
-							$mes = ($hora[1]=='Dec') ? '12' : $hora[1] ;
+							if($hora[1]=='Jan') $mes = '01';
+							if($hora[1]=='Feb') $mes = '02';
+							if($hora[1]=='Mar') $mes = '03';
+							if($hora[1]=='Apr') $mes = '04';
+							if($hora[1]=='May') $mes = '05';
+							if($hora[1]=='Jun') $mes = '06';
+							if($hora[1]=='Jul') $mes = '07';
+							if($hora[1]=='Aug') $mes = '08';
+							if($hora[1]=='Sep') $mes = '09';
+							if($hora[1]=='Oct') $mes = '10';
+							if($hora[1]=='Nov') $mes = '11';
+							if($hora[1]=='Dec') $mes = '12';
 							$date = $hora[2]."/".$mes."/".$hora[4]." ".$hora[3];
-							list($day, $month, $year, $hour, $minute, $second) = split('[/ :]', $date); 
-							$timestamp=mktime($hour, $minute,$second , $month, $day, $year);
+							list($day, $month, $year, $hour, $minute, $second) = split('[/ :]', $date);
+							$timestamp=mktime($hour, $minute, $second , $month, $day, $year);
 							$time_ago = time_ago($timestamp);
 
 							$findme='[error';
