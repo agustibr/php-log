@@ -1,7 +1,16 @@
 <?php
 require('config.php');
+$has_client_error=false;
+$warn_has_client_error = true;
 //ip!
 $ip=$_SERVER['REMOTE_ADDR'];
+if ( isset($_POST['ip']) ) :
+	$ip=$_POST['ip'];
+	$ip_input = '<input type="hidden" value="'.$_POST['ip'].'" name="ip" />';
+elseif ( isset($_GET['ip']) ) :
+	$ip=$_GET['ip'];
+	$ip_input = '<input type="hidden" value="'.$_GET['ip'].'" name="ip" />';
+endif;
 $client="[client ".$ip."]";
 $log_path = $setup['log_path'];
 $ssl_log_path = $setup['ssl_log_path'];
@@ -11,7 +20,6 @@ if ( isset($_POST['ssl']) ){
 $ssl = (isset($_POST['ssl']) && $_POST['ssl']== 'ssl_on') ? '<input type="hidden" value="ssl_on" name="ssl" />' : '<input type="hidden" value="ssl_off" name="ssl" />' ;
 if (isset($_POST['CLEAR']))	exec("cat /dev/null > $log_path");
 exec("cat $log_path",$error_log);
-
 function pre($arr){
 	echo '<pre>';
 	print_r($arr);
@@ -31,7 +39,7 @@ function time_ago($time) {
 	if($difference != 1) $periods[$j].= "s";
 	return "$difference $periods[$j] ago";
 }
-//pre($_POST);
+// pre($error_log);
 ?>
 
 <!DOCTYPE html>
@@ -52,18 +60,26 @@ function time_ago($time) {
 		<div class="container-fluid">
 			<span class="pull-left brand">PHP Log</span>  
 			<form class="pull-left navbar-search" action="" method="POST" target="_self">
-				<?php echo $ssl; ?>
+				<?php 
+				echo $ssl; 
+				if( isset($ip_input) ) echo $ip_input; 
+				?>
+
 				<button class="btn"><i class="icon-refresh"></i> actualitza</button>
 			</form>
 			<form class="pull-left navbar-search" action="" method="POST" target="_self">
 				<input type="hidden" value="Ok" name="CLEAR" />
-				<?php echo $ssl; ?>
+				<?php 
+				echo $ssl; 
+				if( isset($ip_input) ) echo $ip_input; 
+				?>
 				<?php $disabled = (count($error_log)>=1) ? '' : ' disabled' ; ?>
 				<button class="btn" <?php echo $disabled;?>><i class="icon-trash"></i> esborra</button>
 			</form>
 			<form class="pull-right navbar-search form-inline" action="./index.php" method="POST" target="_self">
 				<input type="hidden" value="ssl_off" name="ssl" />
-				<?php 
+				<?php
+				if( isset($ip_input) ) echo $ip_input; 
 				$disabled = ($ssl_log_path!='') ? '' : ' disabled="disabled"' ;
 				$checked = ( isset($_POST['ssl']) && $_POST['ssl']== 'ssl_on') ? 'checked="checked"' : '' ;
 				?>
@@ -79,12 +95,18 @@ function time_ago($time) {
 			<div class="span12">
 				
 				<form class="pull-left" action="" method="POST" target="_self">
-					<?php echo $ssl; ?>
+					<?php 
+					echo $ssl; 
+					if( isset($ip_input) ) echo $ip_input; 
+					?>
 					<button class="btn btn-mini"><i class="icon-refresh"></i> actualitza</button>&nbsp;
 				</form>
 				<form class="pull-left" action="" method="POST" target="_self">
 					<input type="hidden" value="Ok" name="CLEAR" />
-					<?php echo $ssl; ?>
+					<?php 
+					echo $ssl; 
+					if( isset($ip_input) ) echo $ip_input; 
+					?>
 					<?php $disabled = (count($error_log)>=1) ? '' : ' disabled' ; ?>
 					<button class="btn btn-mini" <?php echo $disabled;?>><i class="icon-trash"></i></button>&nbsp;
 				</form>
@@ -94,10 +116,13 @@ function time_ago($time) {
 		<div class="row-fluid">
 			<div class="span12">
 				<?php
+				
 				if (count($error_log)>=1) {
 					echo '<table class="table table-striped table-bordered table-condensed">';
 					for ($i=0;$i<count($error_log);$i++) {
 						if (strpos($error_log[$i],$client)!==false) {
+							echo 'kk';
+							$has_client_error=true;
 							$stri = '<tr>';
 							$error_log[$i]=str_replace($client,"",$error_log[$i]);
 							$client_eror_log=explode("]",$error_log[$i]);
@@ -130,7 +155,7 @@ function time_ago($time) {
 							$stri .='<td>'.$time_ago.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
 
 							if(strpos($client_eror_log[2], $findme)!=''){
-
+								
 							} else {
 								$findme = 'PHP Notice:';
 								if (strpos($error_log[$i],$findme)!==false){
@@ -166,6 +191,11 @@ function time_ago($time) {
 								
 							}
 							echo $stri.'</span></td></tr>';
+						} else {
+							if(!$has_client_error && $warn_has_client_error) :
+								echo '<td>?</td><td><span class="label label-success">other</span></td><td>una altra ip te errors</td></tr>';
+								$warn_has_client_error = false;
+							endif;
 						}
 					}
 					echo "</table>";
