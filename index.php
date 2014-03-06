@@ -11,7 +11,7 @@ elseif ( isset($_GET['ip']) ) :
 	$ip=$_GET['ip'];
 	$ip_input = '<input type="hidden" value="'.$_GET['ip'].'" name="ip" />';
 endif;
-$client="[client ".$ip."]";
+$client="[client ".$ip."";
 $log_path = $setup['log_path'];
 $ssl_log_path = $setup['ssl_log_path'];
 if ( isset($_POST['ssl']) ){
@@ -58,6 +58,7 @@ function time_ago($time) {
 <header class="navbar navbar-fixed-bottom">
 	<div class="navbar-inner">
 		<div class="container-fluid">
+			<?php //echo $varnotdefined; ?>
 			<span class="pull-left brand">PHP Log</span>  
 			<form class="pull-left navbar-search" action="" method="POST" target="_self">
 				<?php 
@@ -140,23 +141,31 @@ function time_ago($time) {
 							if($hora[1]=='Oct') $mes = '10';
 							if($hora[1]=='Nov') $mes = '11';
 							if($hora[1]=='Dec') $mes = '12';
-							$date = $hora[2]."/".$mes."/".$hora[4]." ".$hora[3];
-							list($day, $month, $year, $hour, $minute, $second) = split('[/ :]', $date);
+							$auxhr=explode(".", $hora[3]);
+							$date = $hora[2]."/".$mes."/".$hora[4]." ".$auxhr[0];
+							$day=$hora[2];
+							$month=$mes;
+							$year=$hora[4];
+							$dy=explode(":", $auxhr[0]);
+							$hour=$dy[0];
+							$minute=$dy[1];
+							$second=$dy[2];
 							$timestamp=mktime($hour, $minute, $second , $month, $day, $year);
 							$time_ago = time_ago($timestamp);
-
-							$findme='[error';
+							$findme='[:error';
 							if(strpos($client_eror_log[1], $findme)!=''){
 								$error_type = '<span class="badge">error</span>';
 							} else {
 								$error_type = $client_eror_log[1];
 							}
 
-							$stri .='<td>'.$time_ago.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[2];
+							$stri .='<td>'.$time_ago.'</td><td>'.$error_type.'</td><td><span>'.$client_eror_log[4];
 
-							if(strpos($client_eror_log[2], $findme)!=''){
+							if(strpos($client_eror_log[4], $findme)!=''){
 								
 							} else {
+								//$stri.=$client_eror_log[4];
+								
 								$findme = 'PHP Notice:';
 								if (strpos($error_log[$i],$findme)!==false){
 									$stri = str_replace( $findme, '<span class="label label-warning">'.$findme.'</span>', $stri).'';
@@ -188,6 +197,7 @@ function time_ago($time) {
 								if (strpos($error_log[$i],$findme)!==false){
 									$stri = str_replace( $findme, '</code>'.$findme.'', $stri).'';
 								}
+								
 								
 							}
 							echo $stri.'</span></td></tr>';
